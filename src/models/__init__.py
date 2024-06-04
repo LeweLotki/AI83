@@ -8,6 +8,9 @@ Base = declarative_base()
 
 DATABASE_URL = 'sqlite:///instance/database.db'
 
+if not os.path.exists('instance'):
+    os.makedirs('instance')
+
 engine = create_engine(DATABASE_URL)
 if not database_exists(engine.url):
     create_database(engine.url)
