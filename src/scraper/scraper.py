@@ -7,7 +7,8 @@ from selenium.webdriver.firefox.options import Options
 
 from time import sleep
 
-class SudokupadScraper:
+
+class GeniusScraper:
 
     soup = None
     binary_location = '/snap/firefox/current/usr/lib/firefox/firefox'
@@ -28,7 +29,7 @@ class SudokupadScraper:
         html = self.web_driver.page_source
 
         self.soup = BeautifulSoup(html, 'html.parser')
-        
+         
         return {
         }
 
