@@ -1,9 +1,7 @@
 from sqlalchemy import Column, String, Integer
-from . import db
+from . import Base
 
-
-class TableSongs(db.Model):
-
+class TableSongs(Base):
     __tablename__ = 'songs'
 
     id = Column(Integer, primary_key=True)
@@ -12,4 +10,5 @@ class TableSongs(db.Model):
     content = Column(String)
 
     def __repr__(self):
-        return f'<name: {self.name}\ncontent: {self.content}>'
+        return f'<name: {self.name}, content: {self.content}>'
+
