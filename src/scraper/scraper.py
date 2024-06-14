@@ -21,7 +21,7 @@ class GeniusScraper:
 
         self.web_driver.quit()
 
-    def scrape_url(self, url):
+    def scrape_url(self, url: str):
 
         self.web_driver.get(url)
         sleep(1)
@@ -29,9 +29,54 @@ class GeniusScraper:
         html = self.web_driver.page_source
 
         self.soup = BeautifulSoup(html, 'html.parser')
-         
+
         return {
+            'url': url,
+            'name': self.__get_name(),
+            'content': self.__get_content(),
         }
+
+    def get_urls_list(self, url: str):
+        self.web_driver.get(url)
+        sleep(5)
+
+        last_height = self.web_driver.execute_script(
+            "return document.body.scrollHeight"
+        )
+
+        while True:
+            self.web_driver.execute_script(
+                "window.scrollTo(0, document.body.scrollHeight);"
+            )
+            sleep(2)
+            new_height = self.web_driver.execute_script(
+                "return document.body.scrollHeight"
+            )
+            if new_height == last_height:
+                break
+            last_height = new_height
+
+        html = self.web_driver.page_source
+
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        sized_image_elements = soup.find_all(
+            lambda tag: tag.name == 'div' and any(
+                cls.startswith('SizedImage') for cls in tag.get('class', [])
+            )
+        )
+
+        links = []
+
+        for element in sized_image_elements:
+            parent_a = element.find_parent('a')
+            if parent_a and 'href' in parent_a.attrs:
+                links.append(parent_a['href'])
+
+        for link in links:
+            print(link)
+
+        return links 
 
     def __setup_web_driver(self):
 
@@ -51,5 +96,11 @@ class GeniusScraper:
             )
 
         return web_driver
+
+    def __get_name(self):
+        return
+
+    def __get_content(self):
+        return
 
 

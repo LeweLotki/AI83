@@ -5,12 +5,14 @@ from bs4 import BeautifulSoup
 from .scraper import GeniusScraper
 
 from models.songs import TableSongs
+from models.urls import TableURL
+from models import session
 
 
 class Scraper:
     '''This class is called by CLI command to initialize scraper service'''    
     
-    genius_url = 'https://genius.com/'
+    genius_url = 'https://genius.com/artists/Pro8l3m/songs'
 
     def __init__(self):  
         '''Initializing particular scrapers constructors'''
@@ -27,27 +29,28 @@ class Scraper:
             -> save collected data to db and change flag scraped if scraped succesfully
         '''
 
-        urls_to_scrape = [self.genius_url] 
+        urls_to_scrape = self.genius_scraper.get_urls_list(self.genius_url)
+        for url in urls_to_scrape:
+            new_url = TableURL(
+                url=url,
+                scraped=False
+            )
+            session.add(new_url)
+            session.commit()
+        return
         for url in urls_to_scrape:
 
             try:
-                data = self.__collect_genius_data(url=url)
+                data = self.genius_scraper.scrape_url(url=url)                
                 if data:
                     is_data_complete = self.__commit_collected_data(data)
                     if is_data_complete:
                         self.logger.info(f'Succesfully scraped: {url}')
-                    db.session.commit()
+                    session.commit()
 
             except Exception as e:
                 self.logger.error(f"Error scraping {url}: {e}")
-                db.session.rollback()
-
-    def __collect_genius_data(self, url: str) -> dict:
-        '''This method collect data scraped from given url from db'''
-
-        genius_data = self.genius_scraper.scrape_url(url=url)
-
-        return genius_data 
+                session.rollback()
 
     def __commit_collected_data(self, data: dict) -> bool:
         '''
@@ -68,7 +71,7 @@ class Scraper:
                 name=data['name'],
                 content=data['content'],
             )
-            db.session.add(new_song)
+            session.add(new_song)
             
             return True
 

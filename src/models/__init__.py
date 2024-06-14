@@ -21,6 +21,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 def init_db():
-    from .songs import TableSongs 
+    from .songs import TableSongs
+    from .urls import TableURL
     Base.metadata.create_all(engine)
 
