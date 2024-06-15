@@ -30,7 +30,7 @@ class Scraper:
         '''
         
         urls = session.query(TableURL).all()
-        if urls is None:
+        if not urls:
             self.collect_url()
 
         urls_to_scrape = session.query(TableURL)\
@@ -38,12 +38,13 @@ class Scraper:
             .all()
 
         for url in urls_to_scrape:
-            print(url.url)
             try:
                 data = self.genius_scraper.scrape_url(url=url.url)                
                 if data:
                     is_data_complete = self.__commit_collected_data(data)
                     if is_data_complete:
+                        url.scraped = True
+                        session.add(url)
                         self.logger.info(f'Succesfully scraped: {url}')
                     session.commit()
 

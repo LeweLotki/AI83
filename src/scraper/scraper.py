@@ -29,7 +29,6 @@ class GeniusScraper:
         html = self.web_driver.page_source
 
         self.soup = BeautifulSoup(html, 'html.parser')
-        print(self.soup)
 
         return {
             'url': url,
@@ -74,9 +73,6 @@ class GeniusScraper:
             if parent_a and 'href' in parent_a.attrs:
                 links.append(parent_a['href'])
 
-        for link in links:
-            print(link)
-
         return links 
 
     def __setup_web_driver(self):
@@ -99,9 +95,22 @@ class GeniusScraper:
         return web_driver
 
     def __get_name(self):
-        return
-
+        songheader_span = self.soup.find(
+            lambda tag: tag.name == 'span' and any(
+                cls.startswith('SongHeaderdesktop') for cls in tag.get('class', [])
+            )
+        )
+        
+        if songheader_span:
+            return songheader_span.get_text(strip=True)
+        return None
+    
     def __get_content(self):
-        return
-
+        lyrics_container_divs = self.soup.find_all(lambda tag: tag.name == 'div' and any(cls.startswith('Lyrics__Container') for cls in tag.get('class', [])))
+        
+        lyrics_text = ''
+        for div in lyrics_container_divs:
+            lyrics_text += div.get_text(separator='\n', strip=True) + '\n'
+        print(lyrics_text.strip())
+        return lyrics_text.strip() if lyrics_text else None
 
