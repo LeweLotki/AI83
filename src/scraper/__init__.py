@@ -28,20 +28,19 @@ class Scraper:
             -> iterate through urls in db and scrape all significant data from them
             -> save collected data to db and change flag scraped if scraped succesfully
         '''
+        
+        urls = session.query(TableURL).all()
+        if urls is None:
+            self.collect_url()
 
-        urls_to_scrape = self.genius_scraper.get_urls_list(self.genius_url)
-        for url in urls_to_scrape:
-            new_url = TableURL(
-                url=url,
-                scraped=False
-            )
-            session.add(new_url)
-            session.commit()
-        return
-        for url in urls_to_scrape:
+        urls_to_scrape = session.query(TableURL)\
+            .filter(TableURL.scraped==False)\
+            .all()
 
+        for url in urls_to_scrape:
+            print(url.url)
             try:
-                data = self.genius_scraper.scrape_url(url=url)                
+                data = self.genius_scraper.scrape_url(url=url.url)                
                 if data:
                     is_data_complete = self.__commit_collected_data(data)
                     if is_data_complete:
@@ -51,6 +50,18 @@ class Scraper:
             except Exception as e:
                 self.logger.error(f"Error scraping {url}: {e}")
                 session.rollback()
+
+    def collect_url(self):
+
+        urls_to_scrape = self.genius_scraper.get_urls_list(self.genius_url)
+        for url in urls_to_scrape:
+            new_url = TableURL(
+                url=url,
+                scraped=False
+            )
+            session.add(new_url)
+        session.commit()
+       
 
     def __commit_collected_data(self, data: dict) -> bool:
         '''

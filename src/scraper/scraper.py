@@ -29,6 +29,7 @@ class GeniusScraper:
         html = self.web_driver.page_source
 
         self.soup = BeautifulSoup(html, 'html.parser')
+        print(self.soup)
 
         return {
             'url': url,
