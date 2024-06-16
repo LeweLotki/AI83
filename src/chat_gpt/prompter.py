@@ -21,17 +21,15 @@ class Prompter():
         prompt_base = "Napisz krótki opis(dwa zdania) o czym jest poniższa piosenka. Zwróć uwagę na konkretne zabiegi stylistyczne i narrację: " 
         
         songs = session.query(TableSongs).all()
-
-        matching_names = session.query(TableSongs.name)\
-            .join(TableDescription, TableSongs.name == TableDescription.name)\
-            .all()
+        matching_names = session.query(TableDescription.name).all()
+        matching_names_set = {name[0] for name in matching_names}
 
         for song in songs:
-           
-            if song.name in matching_names:
+        
+            if song.name in matching_names_set:
                 continue
-            print(song.name)
-            print()
+
+            print(f'\n {song.name} \n')
             prompt = prompt_base + song.content
             response = self.chat_gpt.get_response(prompt)
             print(response)
