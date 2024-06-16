@@ -13,7 +13,7 @@ class ChatGPT:
                 {"role": "user", "content": prompt}
             ],
             model=self.model,
-            max_tokens=300,
+            max_tokens=1500,
             temperature=0.7,
         )
         return chat_completion.choices[0].message.content.strip()
