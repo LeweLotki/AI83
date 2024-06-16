@@ -23,5 +23,6 @@ session = DBSession()
 def init_db():
     from .songs import TableSongs
     from .urls import TableURL
+    from .description import TableDescription
     Base.metadata.create_all(engine)
 

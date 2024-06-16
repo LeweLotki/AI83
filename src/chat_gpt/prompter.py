@@ -12,7 +12,10 @@ class Prompter():
             raise ValueError("No API key found.")
 
         model = 'gpt-4o'
-        chat_gpt = ChatGPT(api_key=api_key, model=model)
+        self.chat_gpt = ChatGPT(api_key=api_key, model=model)
+
+    def get_descriptions(self):
+        return
 
 
 

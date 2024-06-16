@@ -8,7 +8,8 @@ def main():
     scraper = Scraper()
     scraper.scrape_url()
 
-    Prompter()
+    prompter = Prompter()
+    prompter.get_descriptions()
 
 if __name__ == "__main__":
     main()
